@@ -137,10 +137,10 @@ class Board:
                       [None,None,None,None]]
         self.emptyList = list(range(0,16))
 
-    def addABlock(self):
+    def addABlock(self, value=1):
         shuffle(self.emptyList)
 
-        block = Block(self.emptyList[0], 1)
+        block = Block(self.emptyList[0], value)
         self.board[block.x][block.y] = block
         self.emptyList.remove(self.emptyList[0])
 
@@ -389,7 +389,8 @@ class Game:
         self.goal = 2048
         self.won = False
 
-        self.board.addABlock()
+        self.board.addABlock(value=2)
+        self.board.addABlock(value=2)
 
     def checkWinning(self):
         isWon = False
