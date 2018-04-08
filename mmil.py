@@ -77,6 +77,58 @@ class Block:
             self.y = self.y-1
             self.loc = self.x*4 + self.y
 
+    def canMergeDown(self, board):
+        if self.x <3:
+            nextBlock = board[self.x+1][self.y]
+            if nextBlock != None:
+                if nextBlock.value == self.value:
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        else:
+            return False
+
+    def canMergeUp(self, board):
+        if self.x >0:
+            nextBlock = board[self.x-1][self.y]
+            if nextBlock != None:
+                if nextBlock.value == self.value:
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        else:
+            return False
+
+    def canMergeRight(self, board):
+        if self.y <3:
+            nextBlock = board[self.x][self.y+1]
+            if nextBlock != None:
+                if nextBlock.value == self.value:
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        else:
+            return False
+
+    def canMergeLeft(self, board):
+        if self.y >0:
+            nextBlock = board[self.x][self.y-1]
+            if nextBlock != None:
+                if nextBlock.value == self.value:
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        else:
+            return False
+
 class Board:
     def __init__(self):
         self.board = [[None,None,None,None],
@@ -112,7 +164,14 @@ class Board:
         for row in self.board:
             for block in row:
                 if block != None:
-                    if block.canMoveDown(self.board):
+                    if block.canMergeDown(self.board):
+                        self.board[block.x][block.y] = None
+                        self.emptyList.append(block.x*4 + block.y)
+
+                        self.board[block.x+1][block.y].value += block.value
+
+                        movedCount = movedCount + 1
+                    elif block.canMoveDown(self.board):
                         self.board[block.x][block.y] = None
                         self.emptyList.append(block.x*4 + block.y)
 
@@ -131,7 +190,14 @@ class Board:
         for row in self.board:
             for block in row:
                 if block != None:
-                    if block.canMoveUp(self.board):
+                    if block.canMergeUp(self.board):
+                        self.board[block.x][block.y] = None
+                        self.emptyList.append(block.x*4 + block.y)
+
+                        self.board[block.x-1][block.y].value += block.value
+
+                        movedCount = movedCount + 1
+                    elif block.canMoveUp(self.board):
                         self.board[block.x][block.y] = None
                         self.emptyList.append(block.x*4+block.y)
 
@@ -150,7 +216,14 @@ class Board:
         for row in self.board:
             for block in row:
                 if block != None:
-                    if block.canMoveRight(self.board):
+                    if block.canMergeRight(self.board):
+                        self.board[block.x][block.y] = None
+                        self.emptyList.append(block.x*4 + block.y)
+
+                        self.board[block.x][block.y+1].value += block.value
+
+                        movedCount = movedCount + 1
+                    elif block.canMoveRight(self.board):
                         self.board[block.x][block.y] = None
                         self.emptyList.append(block.x*4 + block.y)
 
@@ -169,7 +242,14 @@ class Board:
         for row in self.board:
             for block in row:
                 if block != None:
-                    if block.canMoveLeft(self.board):
+                    if block.canMergeLeft(self.board):
+                        self.board[block.x][block.y] = None
+                        self.emptyList.append(block.x*4 + block.y)
+
+                        self.board[block.x][block.y-1].value += block.value
+
+                        movedCount = movedCount + 1
+                    elif block.canMoveLeft(self.board):
                         self.board[block.x][block.y] = None
                         self.emptyList.append(block.x*4 + block.y)
 
@@ -199,13 +279,15 @@ if __name__=='__main__':
 
     board = Board()
     board.addABlockAt(0)
-    board.addABlockAt(13)
+    board.addABlockAt(4)
     print(board.emptyList)
     board.prettyPrint()
 
     board.moveUp()
     print(board.emptyList)
     board.prettyPrint()
+
+    board.addABlockAt(2)
 
     board.moveDown()
     print(board.emptyList)
@@ -214,6 +296,14 @@ if __name__=='__main__':
     board.moveRight()
     print(board.emptyList)
     board.prettyPrint()
+
+    board.addABlockAt(7)
+    print(board.emptyList)
+    board.prettyPrint()
+
+    board.moveDown()
+    print(board.emptyList)
+    board.prettyPrint()§
 
     board.moveLeft()
     print(board.emptyList)
