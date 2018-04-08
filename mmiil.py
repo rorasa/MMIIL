@@ -161,6 +161,7 @@ class Board:
 
     def moveDown(self):
         movedCount = 0
+        isMoved = False
         for row in self.board:
             for block in row:
                 if block != None:
@@ -171,6 +172,7 @@ class Board:
                         self.board[block.x+1][block.y].value += block.value
 
                         movedCount = movedCount + 1
+                        isMoved = True
                     elif block.canMoveDown(self.board):
                         self.board[block.x][block.y] = None
                         self.emptyList.append(block.x*4 + block.y)
@@ -181,12 +183,16 @@ class Board:
                         self.emptyList.remove(block.x*4 + block.y)
 
                         movedCount = movedCount + 1
+                        isMoved = True
 
         if movedCount > 0:
             self.moveDown()
 
+        return isMoved
+
     def moveUp(self):
         movedCount = 0
+        isMoved = False
         for row in self.board:
             for block in row:
                 if block != None:
@@ -197,6 +203,7 @@ class Board:
                         self.board[block.x-1][block.y].value += block.value
 
                         movedCount = movedCount + 1
+                        isMoved = True
                     elif block.canMoveUp(self.board):
                         self.board[block.x][block.y] = None
                         self.emptyList.append(block.x*4+block.y)
@@ -207,12 +214,16 @@ class Board:
                         self.emptyList.remove(block.x*4 + block.y)
 
                         movedCount = movedCount + 1
+                        isMoved = True
 
         if movedCount > 0:
             self.moveUp()
 
+        return isMoved
+
     def moveRight(self):
         movedCount = 0
+        isMoved = False
         for row in self.board:
             for block in row:
                 if block != None:
@@ -223,6 +234,7 @@ class Board:
                         self.board[block.x][block.y+1].value += block.value
 
                         movedCount = movedCount + 1
+                        isMoved = True
                     elif block.canMoveRight(self.board):
                         self.board[block.x][block.y] = None
                         self.emptyList.append(block.x*4 + block.y)
@@ -233,12 +245,16 @@ class Board:
                         self.emptyList.remove(block.x*4 + block.y)
 
                         movedCount = movedCount + 1
+                        isMoved = True
 
         if movedCount > 0:
             self.moveRight()
 
+        return isMoved
+
     def moveLeft(self):
         movedCount = 0
+        isMoved = False
         for row in self.board:
             for block in row:
                 if block != None:
@@ -249,6 +265,7 @@ class Board:
                         self.board[block.x][block.y-1].value += block.value
 
                         movedCount = movedCount + 1
+                        isMoved = True
                     elif block.canMoveLeft(self.board):
                         self.board[block.x][block.y] = None
                         self.emptyList.append(block.x*4 + block.y)
@@ -259,9 +276,12 @@ class Board:
                         self.emptyList.remove(block.x*4 + block.y)
 
                         movedCount = movedCount + 1
+                        isMoved = True
 
         if movedCount > 0:
             self.moveLeft()
+
+        return isMoved
 
     def prettyPrint(self):
         for i in range(0,4):
@@ -274,37 +294,66 @@ class Board:
                     print(" | ", end='')
             print("\n-------------")
 
+class Game:
+    def __init__(self):
+        self.board = Board()
+        self.turns = 0
+        self.goal = 2048
+        self.won = False
+
+        self.board.addABlock()
+
+    def checkWinning(self):
+        isWon = False
+        for row in self.board.board:
+            for block in row:
+                if block != None:
+                    if block.value == self.goal:
+                        isWon = True
+        return isWon
+
+    def move(self, direction):
+        if self.won == True:
+            return False
+
+        if direction == 'up':
+            self.board.moveUp()
+        elif direction == 'down':
+            self.board.moveDown()
+        elif direction == 'right':
+            self.board.moveRight()
+        elif direction == 'left':
+            self.board.moveLeft()
+        else:
+            raise ValueError('Direction must be up, down, left, or right.')
+
+        self.board.addABlock()
+
+        self.turns += 1
+
+        if self.checkWinning():
+            self.won = True
+
+        return True
+
+
 if __name__=='__main__':
-    print("Hello World")
+    print("MMIIL")
 
-    board = Board()
-    board.addABlockAt(0)
-    board.addABlockAt(4)
-    print(board.emptyList)
-    board.prettyPrint()
+    game = Game()
+    game.board.prettyPrint()
 
-    board.moveUp()
-    print(board.emptyList)
-    board.prettyPrint()
+    while not game.won:
+        nextMove = input('Up(w), Down(s), Left(a), Right(d): ')
+        if nextMove=='w':
+            game.move('up')
+        elif nextMove=='s':
+            game.move('down')
+        elif nextMove=='a':
+            game.move('left')
+        elif nextMove=='d':
+            game.move('right')
+        game.board.prettyPrint()
 
-    board.addABlockAt(2)
-
-    board.moveDown()
-    print(board.emptyList)
-    board.prettyPrint()
-
-    board.moveRight()
-    print(board.emptyList)
-    board.prettyPrint()
-
-    board.addABlockAt(7)
-    print(board.emptyList)
-    board.prettyPrint()
-
-    board.moveDown()
-    print(board.emptyList)
-    board.prettyPrint()§
-
-    board.moveLeft()
-    print(board.emptyList)
-    board.prettyPrint()
+    print("You WIN!")
+    print("Total turns: "+str(game.turns))
