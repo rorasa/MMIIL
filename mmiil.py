@@ -160,20 +160,15 @@ class Board:
             self.moveDown()
 
     def moveDown(self):
-        movedCount = 0
         isMoved = False
-        for row in self.board:
-            for block in row:
+        isMerged = False
+
+        # 1st move check
+        for i in [3,2,1,0]:
+            for j in [0,1,2,3]:
+                block = self.board[i][j]
                 if block != None:
-                    if block.canMergeDown(self.board):
-                        self.board[block.x][block.y] = None
-                        self.emptyList.append(block.x*4 + block.y)
-
-                        self.board[block.x+1][block.y].value += block.value
-
-                        movedCount = movedCount + 1
-                        isMoved = True
-                    elif block.canMoveDown(self.board):
+                    while block.canMoveDown(self.board):
                         self.board[block.x][block.y] = None
                         self.emptyList.append(block.x*4 + block.y)
 
@@ -182,19 +177,65 @@ class Board:
                         self.board[block.x][block.y] = block
                         self.emptyList.remove(block.x*4 + block.y)
 
-                        movedCount = movedCount + 1
                         isMoved = True
 
-        if movedCount > 0:
-            self.moveDown()
+        # merge check
+        for i in [3,2,1,0]:
+            for j in [0,1,2,3]:
+                block = self.board[i][j]
+                if block != None:
+                    if block.canMergeDown(self.board):
+                        self.board[block.x][block.y] = None
+                        self.emptyList.append(block.x*4 + block.y)
+
+                        self.board[block.x+1][block.y].value += block.value
+
+                        isMoved = True
+                        isMerged = True
+
+        # 2nd move check after merging
+        if isMerged:
+            for i in [3,2,1,0]:
+                for j in [0,1,2,3]:
+                    block = self.board[i][j]
+                    if block != None:
+                        while block.canMoveDown(self.board):
+                            self.board[block.x][block.y] = None
+                            self.emptyList.append(block.x*4 + block.y)
+
+                            block.moveDown()
+
+                            self.board[block.x][block.y] = block
+                            self.emptyList.remove(block.x*4 + block.y)
+
+                            isMoved = True
 
         return isMoved
 
     def moveUp(self):
-        movedCount = 0
         isMoved = False
-        for row in self.board:
-            for block in row:
+        isMerged = False
+
+        # 1st move check
+        for i in [0,1,2,3]:
+            for j in [0,1,2,3]:
+                block = self.board[i][j]
+                if block != None:
+                    while block.canMoveUp(self.board):
+                        self.board[block.x][block.y] = None
+                        self.emptyList.append(block.x*4 + block.y)
+
+                        block.moveUp()
+
+                        self.board[block.x][block.y] = block
+                        self.emptyList.remove(block.x*4 + block.y)
+
+                        isMoved = True
+
+        # merge check
+        for i in [0,1,2,3]:
+            for j in [0,1,2,3]:
+                block = self.board[i][j]
                 if block != None:
                     if block.canMergeUp(self.board):
                         self.board[block.x][block.y] = None
@@ -202,40 +243,38 @@ class Board:
 
                         self.board[block.x-1][block.y].value += block.value
 
-                        movedCount = movedCount + 1
                         isMoved = True
-                    elif block.canMoveUp(self.board):
-                        self.board[block.x][block.y] = None
-                        self.emptyList.append(block.x*4+block.y)
+                        isMerged = True
 
-                        block.moveUp()
+        # 2nd move check after merging
+        if isMerged:
+            for i in [0,1,2,3]:
+                for j in [0,1,2,3]:
+                    block = self.board[i][j]
+                    if block != None:
+                        while block.canMoveUp(self.board):
+                            self.board[block.x][block.y] = None
+                            self.emptyList.append(block.x*4 + block.y)
 
-                        self.board[block.x][block.y] = block
-                        self.emptyList.remove(block.x*4 + block.y)
+                            block.moveUp()
 
-                        movedCount = movedCount + 1
-                        isMoved = True
+                            self.board[block.x][block.y] = block
+                            self.emptyList.remove(block.x*4 + block.y)
 
-        if movedCount > 0:
-            self.moveUp()
+                            isMoved = True
 
         return isMoved
 
     def moveRight(self):
-        movedCount = 0
         isMoved = False
-        for row in self.board:
-            for block in row:
+        isMerged = False
+
+        # 1st move check
+        for i in [0,1,2,3]:
+            for j in [3,2,1,0]:
+                block = self.board[i][j]
                 if block != None:
-                    if block.canMergeRight(self.board):
-                        self.board[block.x][block.y] = None
-                        self.emptyList.append(block.x*4 + block.y)
-
-                        self.board[block.x][block.y+1].value += block.value
-
-                        movedCount = movedCount + 1
-                        isMoved = True
-                    elif block.canMoveRight(self.board):
+                    while block.canMoveRight(self.board):
                         self.board[block.x][block.y] = None
                         self.emptyList.append(block.x*4 + block.y)
 
@@ -244,29 +283,51 @@ class Board:
                         self.board[block.x][block.y] = block
                         self.emptyList.remove(block.x*4 + block.y)
 
-                        movedCount = movedCount + 1
                         isMoved = True
 
-        if movedCount > 0:
-            self.moveRight()
+        # merge check
+        for i in [0,1,2,3]:
+            for j in [3,2,1,0]:
+                block = self.board[i][j]
+                if block != None:
+                    if block.canMergeRight(self.board):
+                        self.board[block.x][block.y] = None
+                        self.emptyList.append(block.x*4 + block.y)
+
+                        self.board[block.x][block.y+1].value += block.value
+
+                        isMoved = True
+                        isMerged = True
+
+        # 2nd move check after merging
+        if isMerged:
+            for i in [0,1,2,3]:
+                for j in [3,2,1,0]:
+                    block = self.board[i][j]
+                    if block != None:
+                        while block.canMoveRight(self.board):
+                            self.board[block.x][block.y] = None
+                            self.emptyList.append(block.x*4 + block.y)
+
+                            block.moveRight()
+
+                            self.board[block.x][block.y] = block
+                            self.emptyList.remove(block.x*4 + block.y)
+
+                            isMoved = True
 
         return isMoved
 
     def moveLeft(self):
-        movedCount = 0
         isMoved = False
-        for row in self.board:
-            for block in row:
+        isMerged = False
+
+        # 1st move check
+        for i in [0,1,2,3]:
+            for j in [0,1,2,3]:
+                block = self.board[i][j]
                 if block != None:
-                    if block.canMergeLeft(self.board):
-                        self.board[block.x][block.y] = None
-                        self.emptyList.append(block.x*4 + block.y)
-
-                        self.board[block.x][block.y-1].value += block.value
-
-                        movedCount = movedCount + 1
-                        isMoved = True
-                    elif block.canMoveLeft(self.board):
+                    while block.canMoveLeft(self.board):
                         self.board[block.x][block.y] = None
                         self.emptyList.append(block.x*4 + block.y)
 
@@ -275,11 +336,38 @@ class Board:
                         self.board[block.x][block.y] = block
                         self.emptyList.remove(block.x*4 + block.y)
 
-                        movedCount = movedCount + 1
                         isMoved = True
 
-        if movedCount > 0:
-            self.moveLeft()
+        # merge check
+        for i in [0,1,2,3]:
+            for j in [0,1,2,3]:
+                block = self.board[i][j]
+                if block != None:
+                    if block.canMergeLeft(self.board):
+                        self.board[block.x][block.y] = None
+                        self.emptyList.append(block.x*4 + block.y)
+
+                        self.board[block.x][block.y-1].value += block.value
+
+                        isMoved = True
+                        isMerged = True
+
+        # 2nd move check after merging
+        if isMerged:
+            for i in [0,1,2,3]:
+                for j in [0,1,2,3]:
+                    block = self.board[i][j]
+                    if block != None:
+                        while block.canMoveLeft(self.board):
+                            self.board[block.x][block.y] = None
+                            self.emptyList.append(block.x*4 + block.y)
+
+                            block.moveLeft()
+
+                            self.board[block.x][block.y] = block
+                            self.emptyList.remove(block.x*4 + block.y)
+
+                            isMoved = True
 
         return isMoved
 
@@ -313,23 +401,25 @@ class Game:
         return isWon
 
     def move(self, direction):
+        isMoved = False
+
         if self.won == True:
             return False
 
         if direction == 'up':
-            self.board.moveUp()
+            isMoved = self.board.moveUp()
         elif direction == 'down':
-            self.board.moveDown()
+            isMoved = self.board.moveDown()
         elif direction == 'right':
-            self.board.moveRight()
+            isMoved = self.board.moveRight()
         elif direction == 'left':
-            self.board.moveLeft()
+            isMoved = self.board.moveLeft()
         else:
             raise ValueError('Direction must be up, down, left, or right.')
 
-        self.board.addABlock()
-
-        self.turns += 1
+        if isMoved:
+            self.board.addABlock()
+            self.turns += 1
 
         if self.checkWinning():
             self.won = True
